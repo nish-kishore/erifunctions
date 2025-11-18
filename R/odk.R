@@ -180,12 +180,50 @@ download_odk_form <- function(
   }
 }
 
-#' List all users
+#' List all users in ODK
+#' @description
+#' Given verified access list all users
+#' @param url `chr` Target URL for the ODK Central API
+#' @param auth `chr` Authorization token to access URL
+#' @param project_id `int` The project id for which you want to identify users
+#' @param testing `bool` T/F if you want to just verify that the API if working
+#' @returns `tibble` Output of all projects from API call
+list_odk_app_users <- function(
+    url = Sys.getenv("ODK_URL"),
+    auth = Sys.getenv("ODK_TOKEN"),
+    project_id,
+    testing = FALSE
+){
+
+  if(testing){
+    (httr::GET(
+      url = httr::modify_url(url, path = glue::glue("v1/example2"))
+    ) |>
+      httr::content())$code
+  }else{
+    x <- httr::GET(
+      url = paste0(Sys.getenv("ODK_URL"), "v1/projects/",2,"/app-users/"),
+      config = httr::add_headers(
+        "Authorization" = paste0("Bearer ", Sys.getenv("ODK_TOKEN"))
+      )
+    )
+
+    x <- httr::content(x)
+
+    out <- lapply(1:length(x), function(i){
+      x[[i]] |> unlist() |> t() |>  tibble::as_tibble()
+    }) |> dplyr::bind_rows()
+
+
+    out <- readr::read_csv(paste0(tempdir(),"/",form_id,".csv"))
+
+    return(out)
+  }
+}
 
 #' See all users who have access to a form
 
-#' Add online users
 
-#' Add app users
+#' Create/Delete app users
 
 #' Link and unlink users to a form
