@@ -104,7 +104,7 @@ list_odk_projects <- function(
 #' @param auth `chr` Authorization token to access URL
 #' @param project_id `int` Project id from `list_odk_projects()`
 #' @param testing `bool` T/F if you want to just verify that the API if working
-#' @returns `tibble` Output of all projects from API call
+#' @returns `tibble` Output of all forms within a project from API call
 list_odk_forms <- function(
     url = Sys.getenv("ODK_URL"),
     auth = Sys.getenv("ODK_TOKEN"),
@@ -145,7 +145,7 @@ list_odk_forms <- function(
 #' @param project_id `int` Project id from `list_odk_projects()`
 #' @param form_id `chr` From id from `list_odk_forms()`
 #' @param testing `bool` T/F if you want to just verify that the API if working
-#' @returns `tibble` Output of all projects from API call
+#' @returns `tibble` Download of all data from an ODK form
 #' @importFrom utils unzip
 download_odk_form <- function(
     url = Sys.getenv("ODK_URL"),
@@ -187,8 +187,8 @@ download_odk_form <- function(
 #' @param auth `chr` Authorization token to access URL
 #' @param project_id `int` The project id for which you want to identify users
 #' @param testing `bool` T/F if you want to just verify that the API if working
-#' @returns `tibble` Output of all projects from API call
-list_odk_app_users <- function(
+#' @returns `tibble` Output of all app-users in the project
+list_all_odk_app_users <- function(
     url = Sys.getenv("ODK_URL"),
     auth = Sys.getenv("ODK_TOKEN"),
     project_id,
@@ -202,9 +202,9 @@ list_odk_app_users <- function(
       httr::content())$code
   }else{
     x <- httr::GET(
-      url = paste0(Sys.getenv("ODK_URL"), "v1/projects/",2,"/app-users/"),
+      url = paste0(url, "v1/projects/",project_id,"/app-users/"),
       config = httr::add_headers(
-        "Authorization" = paste0("Bearer ", Sys.getenv("ODK_TOKEN"))
+        "Authorization" = paste0("Bearer ", auth)
       )
     )
 
@@ -214,16 +214,180 @@ list_odk_app_users <- function(
       x[[i]] |> unlist() |> t() |>  tibble::as_tibble()
     }) |> dplyr::bind_rows()
 
-
-    out <- readr::read_csv(paste0(tempdir(),"/",form_id,".csv"))
-
     return(out)
   }
 }
 
 #' See all users who have access to a form
+#' @description
+#' Given verified access list all users
+#' @param url `chr` Target URL for the ODK Central API
+#' @param auth `chr` Authorization token to access URL
+#' @param project_id `int` The project id for which you want to identify users
+#' @param form_id `chr` The form id for which we want to identify users
+#' @param testing `bool` T/F if you want to just verify that the API if working
+#' @returns `tibble` Output of all form users and roles within a given form
+list_odk_form_users <- function(
+    url = Sys.getenv("ODK_URL"),
+    auth = Sys.getenv("ODK_TOKEN"),
+    project_id,
+    form_id,
+    testing = FALSE
+){
+
+  if(testing){
+    (httr::GET(
+      url = httr::modify_url(url, path = glue::glue("v1/example2"))
+    ) |>
+      httr::content())$code
+  }else{
+    x <- httr::GET(
+      url = paste0(url, "v1/projects/",project_id,"/forms/",form_id,"/assignments"),
+      config = httr::add_headers(
+        "Authorization" = paste0("Bearer ", auth)
+      )
+    )
+
+    x <- httr::content(x)
+
+    out <- lapply(1:length(x), function(i){
+      x[[i]] |> unlist() |> t() |>  tibble::as_tibble()
+    }) |> dplyr::bind_rows()
+
+    return(out)
+  }
+}
+
+#' Create/Delete/Assign/Un-assign app users
+#' @description
+#' Given an action, project id, form id, role id and actor id,
+#' update the access that a specific app user is provided
+#' @param action `chr` 'create': Create a general app-user;
+#' 'delete': Delete an app-user;
+#' 'assign': Assign an app-user a role within a specific form
+#' 'revoke': Revoke an app-user role within a specific form
+#' assign, revoke
+#' @param project_id `int` The project id for which you want to identify users
+#' @param form_id `chr` The form id for which you want to identify users
+#' @param actor_name `chr` The display name of the actor to be updated
+#' @param role_id `int` The role id which you want to assign, usually 2
+#' @param actor_id `int` The actor id to be deleted
+#' @param testing `bool` T/F if you want to just verify that the API if working
+#' @param url `chr` Target URL for the ODK Central API
+#' @param auth `chr` Authorization token to access URL
+update_odk_app_user_role <- function(
+    action,
+    project_id,
+    form_id = NULL,
+    actor_name = NULL,
+    role_id = NULL,
+    actor_id = NULL,
+    testing = FALSE,
+    url = Sys.getenv("ODK_URL"),
+    auth = Sys.getenv("ODK_TOKEN")
+){
+
+  if(!action %in% c("create", "delete", "assign", "revoke")){
+    stop("Action must be 'create', 'delete', 'assign' or 'revoke'")
+  }
+
+  if(action == "create" & is.null(actor_name)){
+    stop("An 'actor_name' is necessary to create an app-user")
+  }
+
+  if(action == "delete" & is.null(actor_id)){
+    stop("An 'actor_id' is necessary to delete an app-user")
+  }
+
+  if(action %in% c("assign", "revoke") & is.null(form_id)){
+    stop("A 'form_id' must be specified to assign or revoke access")
+  }
+
+  if(action %in% c("assign", "revoke") & is.null(role_id)){
+    stop("A 'role_id' must be specified to assign or revoke access")
+  }
+
+  if(action %in% c("assign", "revoke") & is.null(actor_id)){
+    stop("An 'actor_id' is necessary to assign or evoke permissions.")
+  }
+
+  if(testing){
+    (httr::GET(
+      url = httr::modify_url(url, path = glue::glue("v1/example2"))
+    ) |>
+      httr::content())$code
+    stop()
+  }
+
+  if(action == "create"){
+    x <- httr::POST(
+      url = paste0(url,"v1/projects/",project_id,"/app-users"),
+      config = httr::add_headers(
+        "Authorization" = paste0("Bearer ", auth)
+      ),
+      body = list(
+        "displayName" = actor_name
+      ),
+      encode = "json"
+    ) |> httr::content()
+
+    return(
+      list(
+        "actor_name" = x$displayName,
+        "actor_id" = x$id,
+        "project_id" = x$projectId
+      )
+    )
+  }
+
+  if(action == "delete"){
+    x <- httr::DELETE(
+      url = paste0(url,"v1/projects/",project_id,"/app-users/", actor_id),
+      config = httr::add_headers(
+        "Authorization" = paste0("Bearer ", auth)
+      )
+    ) |> httr::content()
+
+    if("success" %in% names(x)){
+      return(x$success)
+    }else{
+      return(F)
+    }
+  }
+
+  if(action == "assign"){
+    x <- httr::POST(
+      url = paste0(url,"v1/projects/",project_id,"/forms/", form_id,
+                   "/assignments/",role_id,"/",actor_id),
+      config = httr::add_headers(
+        "Authorization" = paste0("Bearer ", auth)
+      )
+    ) |> httr::content()
 
 
-#' Create/Delete app users
+    if("success" %in% names(x)){
+      return(x$success)
+    }else{
+      return(F)
+    }
+  }
 
-#' Link and unlink users to a form
+  if(action == "revoke"){
+    x <- httr::DELETE(
+      url = paste0(url,"v1/projects/",project_id,"/forms/", form_id,
+                   "/assignments/",role_id,"/",actor_id),
+      config = httr::add_headers(
+        "Authorization" = paste0("Bearer ", auth)
+      )
+    ) |> httr::content()
+
+
+    if("success" %in% names(x)){
+      return(x$success)
+    }else{
+      return(F)
+    }
+  }
+
+}
+

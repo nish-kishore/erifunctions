@@ -24,7 +24,7 @@ download_odk_form(
 \item{testing}{\code{bool} T/F if you want to just verify that the API if working}
 }
 \value{
-\code{tibble} Output of all projects from API call
+\code{tibble} Download of all data from an ODK form
 }
 \description{
 Given verified access, project id and form ID, download all data from an
