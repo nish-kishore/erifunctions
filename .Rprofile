@@ -6,6 +6,11 @@ if (interactive()) {
   suppressMessages(require(devtools))
 }
 
+#preload testthat
+if (interactive()) {
+  suppressMessages(require(testthat))
+}
+
 #setting options for usethis
 options(
   usethis.description = list(
