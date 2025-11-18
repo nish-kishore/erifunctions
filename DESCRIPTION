@@ -17,5 +17,6 @@ Imports:
     glue,
     here,
     httr,
+    readr,
     tibble,
     yaml
