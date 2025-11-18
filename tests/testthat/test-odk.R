@@ -1,3 +1,3 @@
 test_that("ODK Connection Test Caches Token", {
-  expect_false(init_odk_connection(testing = T) == "")
+  expect_true(init_odk_connection(testing = T, verbose = F))
 })

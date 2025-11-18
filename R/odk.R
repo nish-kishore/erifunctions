@@ -9,34 +9,49 @@
 #' @param user `chr` Username
 #' @param pass `chr` Password
 #' @param testing `bool` Should results be evaluated for testing
-#' @return `bool` T/F
+#' @param verbose `bool` Should the function return character with information
+#' or a boolean vector verifying connection
+#' @return `chr`/`bool` Verbose response or a T/F
 init_odk_connection <- function(
     url = yaml::read_yaml(here::here("sandbox/keys.yaml"))$odk$url,
     user = yaml::read_yaml(here::here("sandbox/keys.yaml"))$odk$name,
     pass = yaml::read_yaml(here::here("sandbox/keys.yaml"))$odk$pass,
-    testing = FALSE
+    testing = FALSE,
+    verbose = FALSE
 ){
-  x <- httr::POST(
-    url = httr::modify_url(url, path = glue::glue("v1/sessions")),
-    body = list(
-      "email" = user,
-      "password" = pass
-    ),
-    encode = "json"
-  )
-
-  x <- httr::content(x)
-
-  Sys.setenv("ODK_TOKEN" = x$token)
-  Sys.setenv("ODK_CSRF" = x$csrf)
 
   if(testing){
-    return(Sys.getenv("ODK_TOKEN"))
+    x <- httr::GET(
+      url = "https://api.ipify.org/?format=json"
+    )
+
+    x <- httr::content(x)
+
+    Sys.setenv("ODK_TOKEN" = x$ip)
   }else{
+    x <- httr::POST(
+      url = httr::modify_url(url, path = glue::glue("v1/sessions")),
+      body = list(
+        "email" = user,
+        "password" = pass
+      ),
+      encode = "json"
+    )
+
+    x <- httr::content(x)
+
+    Sys.setenv("ODK_TOKEN" = x$token)
+    Sys.setenv("ODK_CSRF" = x$csrf)
+  }
+
+  if(verbose){
     cli::cli_alert_info(paste0("Your session has been validated at ", x$createdAt,
                                " and will remain active until ", x$expiresAt,
                                ". Your ODK session token has been cached and will
                              remain active until you restart this R session"))
+
+  }else{
+    return(!Sys.getenv("ODK_TOKEN") == "")
   }
 }
 
