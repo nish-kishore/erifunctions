@@ -17,7 +17,7 @@ init_odk_connection <- function(
     user = yaml::read_yaml(here::here("sandbox/keys.yaml"))$odk$name,
     pass = yaml::read_yaml(here::here("sandbox/keys.yaml"))$odk$pass,
     testing = FALSE,
-    verbose = FALSE
+    verbose = TRUE
 ){
 
   if(testing){
@@ -42,6 +42,7 @@ init_odk_connection <- function(
 
     Sys.setenv("ODK_TOKEN" = x$token)
     Sys.setenv("ODK_CSRF" = x$csrf)
+    Sys.setenv("ODK_URL" = url)
   }
 
   if(verbose){
@@ -55,21 +56,85 @@ init_odk_connection <- function(
   }
 }
 
-
-#' Test ODK connection
-#' @description
-#' Verify that the connection to ODK is still active
-#'
-
 #' List ODK projects
 #' @description
 #' Given verified access, list all projects the user can access
-#'
+#' @param url `chr` Target URL for the ODK Central API
+#' @param auth `chr` Authorization token to access URL
+#' @param testing `bool` T/F if you want to just verify that the API if working
+#' @returns `tibble` Output of all projects from API call
+list_odk_projects <- function(
+    url = Sys.getenv("ODK_URL"),
+    auth = Sys.getenv("ODK_TOKEN"),
+    testing = FALSE
+){
+
+  if(testing){
+    (httr::GET(
+      url = httr::modify_url(url, path = glue::glue("v1/example2"))
+    ) |>
+      httr::content())$code
+  }else{
+    x <- httr::GET(
+      url = httr::modify_url(url, path = glue::glue("v1/projects")),
+      config = httr::add_headers(
+        "Authorization" = paste0("Bearer ", auth),
+        "forms" = "true"
+      )
+    )
+
+    x <- httr::content(x)
+
+    out <- lapply(1:length(x), function(i){
+      tibble::tibble(
+        "project_id" = x[[i]]$id,
+        "project" = x[[i]]$name,
+        "description" = x[[i]]$description
+      )
+    }) |> dplyr::bind_rows()
+
+    return(out)
+  }
+}
 
 #' List ODK forms
 #' @description
-#' Given verified access, list all forms under a project
+#' Given verified access and a project id, list all forms under a project
+#' @param url `chr` Target URL for the ODK Central API
+#' @param auth `chr` Authorization token to access URL
+#' @param project_id `int` Project id from `list_odk_projects()`
+#' @param testing `bool` T/F if you want to just verify that the API if working
+#' @returns `tibble` Output of all projects from API call
+list_odk_forms <- function(
+    url = Sys.getenv("ODK_URL"),
+    auth = Sys.getenv("ODK_TOKEN"),
+    project_id,
+    testing = FALSE
+){
 
+  if(testing){
+    (httr::GET(
+      url = httr::modify_url(url, path = glue::glue("v1/example2"))
+    ) |>
+      httr::content())$code
+  }else{
+    x <- httr::GET(
+      url = paste0(url, "v1/projects/",project_id,"/forms"),
+      config = httr::add_headers(
+        "Authorization" = paste0("Bearer ", auth)
+      )
+    )
+
+    x <- httr::content(x)
+
+    out <- lapply(1:length(x), function(i){
+      x[[i]] |> unlist() |> t() |>  tibble::as_tibble()
+    }) |> dplyr::bind_rows() |>
+      dplyr::select("xmlFormId", "name")
+
+    return(out)
+  }
+}
 
 #' Download ODK form data
 #' @description
@@ -85,8 +150,3 @@ init_odk_connection <- function(
 #' Add app users
 
 #' Link and unlink users to a form
-
-#' Initialize a local ODK data repository
-#' @description
-#' Identify a local file that will serve as a
-#'

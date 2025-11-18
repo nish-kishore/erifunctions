@@ -9,7 +9,7 @@ init_odk_connection(
   user = yaml::read_yaml(here::here("sandbox/keys.yaml"))$odk$name,
   pass = yaml::read_yaml(here::here("sandbox/keys.yaml"))$odk$pass,
   testing = FALSE,
-  verbose = FALSE
+  verbose = TRUE
 )
 }
 \arguments{
