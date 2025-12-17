@@ -12,6 +12,7 @@
 #' @param verbose `bool` Should the function return character with information
 #' or a boolean vector verifying connection
 #' @return `chr`/`bool` Verbose response or a T/F
+#' @export
 init_odk_connection <- function(
     url = yaml::read_yaml(here::here("sandbox/keys.yaml"))$odk$url,
     user = yaml::read_yaml(here::here("sandbox/keys.yaml"))$odk$name,
@@ -63,6 +64,7 @@ init_odk_connection <- function(
 #' @param auth `chr` Authorization token to access URL
 #' @param testing `bool` T/F if you want to just verify that the API if working
 #' @returns `tibble` Output of all projects from API call
+#' @export
 list_odk_projects <- function(
     url = Sys.getenv("ODK_URL"),
     auth = Sys.getenv("ODK_TOKEN"),
@@ -105,6 +107,7 @@ list_odk_projects <- function(
 #' @param project_id `int` Project id from `list_odk_projects()`
 #' @param testing `bool` T/F if you want to just verify that the API if working
 #' @returns `tibble` Output of all forms within a project from API call
+#' @export
 list_odk_forms <- function(
     url = Sys.getenv("ODK_URL"),
     auth = Sys.getenv("ODK_TOKEN"),
@@ -147,6 +150,7 @@ list_odk_forms <- function(
 #' @param testing `bool` T/F if you want to just verify that the API if working
 #' @returns `tibble` Download of all data from an ODK form
 #' @importFrom utils unzip
+#' @export
 download_odk_form <- function(
     url = Sys.getenv("ODK_URL"),
     auth = Sys.getenv("ODK_TOKEN"),
@@ -188,6 +192,7 @@ download_odk_form <- function(
 #' @param project_id `int` The project id for which you want to identify users
 #' @param testing `bool` T/F if you want to just verify that the API if working
 #' @returns `tibble` Output of all app-users in the project
+#' @export
 list_all_odk_app_users <- function(
     url = Sys.getenv("ODK_URL"),
     auth = Sys.getenv("ODK_TOKEN"),
@@ -227,6 +232,7 @@ list_all_odk_app_users <- function(
 #' @param form_id `chr` The form id for which we want to identify users
 #' @param testing `bool` T/F if you want to just verify that the API if working
 #' @returns `tibble` Output of all form users and roles within a given form
+#' @export
 list_odk_form_users <- function(
     url = Sys.getenv("ODK_URL"),
     auth = Sys.getenv("ODK_TOKEN"),
@@ -275,6 +281,7 @@ list_odk_form_users <- function(
 #' @param testing `bool` T/F if you want to just verify that the API if working
 #' @param url `chr` Target URL for the ODK Central API
 #' @param auth `chr` Authorization token to access URL
+#' @export
 update_odk_app_user_role <- function(
     action,
     project_id,
