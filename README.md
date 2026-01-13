@@ -12,8 +12,10 @@ More functions we do regularly will be added to this repository.
 3) Download [GitHub Desktop](https://desktop.github.com/download/) and sign in with your credentials.
 4) Access the [erifunctions repository](https://github.com/nish-kishore/erifunctions).
 5) At the top right of the repository page, you should see a green button that says "< > Code". Click the drop down button and select "Open with GitHub Desktop".
-6) Select a path to save. **Important**: this filepath must be outside of OneDrive. 
-7) Install Rtools44 [here](https://cran.r-project.org/bin/windows/Rtools/rtools44/rtools.html).
-8) Within your Console in RStudio, type `install.packages("devtools")`. This installs the "devtools" package. which will be necessary to run certain features of the code found in the repository. 
+6) You now have access to the erifunctions repository! Click on the "Repository" menu item on GitHub Desktop and select "Show in Explorer".
+7) **Important**: Ensure the filepath that the repository is saved to is outside of OneDrive (e.g., on your personal device).
+8) Within the erifunctions repository folder in your Explorer filepath, open the "erifunctions" RStudio Project File.
+8) As that loads, install Rtools44 [here](https://cran.r-project.org/bin/windows/Rtools/rtools44/rtools.html).
+9) Within the Console (bottom panel) in RStudio, type `install.packages("devtools")`. This installs the "devtools" package, which will be necessary to run certain features of the code found in the repository. 
 If you are asked within the Console if you want to proceed, type "Y".
-9) Next, type `devtools::load_all()` into the Console. If you are asked to install required packages (e.g., "dplyr", "here", "httr", etc.), select "Yes".
+10) Next, type `devtools::load_all()` into the Console. If you are asked to install required packages (e.g., "dplyr", "here", "httr", etc.), select "Yes".
