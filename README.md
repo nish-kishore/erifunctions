@@ -1,9 +1,16 @@
-# erifunctions
-A suite of helper functions for the Epidemiology, Research and Innovation Team of the Health Unit in The Carter Center
+---
+title: "Guide to the `erifunctions` Repository"
+output: distill::distill.article
+  html_document: 
+    toc: true
+    toc_float: true
+---
 
+--------------------------------------------------
 # Background
-Purpose of "erifunctions" repository is to standardize code base and make easier for anyone in ERI group to download functions and use the system.
-More functions we do regularly will be added to this repository.
+The "erifunctions" repository is intended for use by the Epidemiology, Research, and Innovation unit of the River Blindness, Lymphatic Filariasis, Schistosomiasis, and Malaria team at The Carter Center.
+The purpose of its suite of helper functions is to create a standardized code base and assist anyone in the group with streamlining certain tasks related to data analysis.
+Additional functions used by the ERI unit will be added continuously to this repository.
 
 # How to Download
 
@@ -12,16 +19,16 @@ More functions we do regularly will be added to this repository.
 3) Download [GitHub Desktop](https://desktop.github.com/download/) and sign in with your credentials.
 4) Access the [erifunctions repository](https://github.com/nish-kishore/erifunctions).
 5) At the top right of the repository page, you should see a green button that says "< > Code". Click the drop down button and select "Open with GitHub Desktop".
-6) You now have access to the erifunctions repository! Click on the "Repository" menu item on GitHub Desktop and select "Show in Explorer".
+6) You now have access to the repository! Click on the "Repository" menu item on GitHub Desktop and select "Show in Explorer".
 7) **Important**: Ensure the filepath that the repository is saved to is outside of OneDrive (e.g., on your personal device).
-8) Within the erifunctions repository folder in your Explorer filepath, open the "erifunctions" RStudio Project File.
+8) Within the "erifunctions" repository folder in your Explorer filepath, open the "erifunctions" RStudio Project File.
 8) As that loads, install Rtools44 [here](https://cran.r-project.org/bin/windows/Rtools/rtools44/rtools.html).
 9) Within the Console (bottom panel) in RStudio, type `install.packages("devtools")`. This installs the "devtools" package, which will be necessary to run certain features of the code found in the repository. 
 If you are asked within the Console if you want to proceed, type "Y".
 10) Next, type `devtools::load_all()` into the Console. If you are asked to install required packages (e.g., "dplyr", "here", "httr", etc.), select "Yes".
-    a) This will load the erifunctions repository as if it were a package.
+    a) This will load the "erifunctions" repository as if it were a package.
 
-# How to Set Up Initial Interaction
+# How to Set Up the Initial Interaction
 
 1) In the Console, type:
 ```
@@ -34,7 +41,7 @@ Replace the items in brackets with your first name, last name, and ODK password.
  a full explanation of the ODK token is needed so details can be specified (`verbose`, automatically set as "TRUE"). If you would just like a simple answer that the ODK token has been established or not,
  just type the same code in Step 1 and add `, verbose = FALSE` after the password.
 
-# Key functions and definitions
+# Key Functions and Definitions
 
 - `init_odk_connection()`: This establishes an active ODK token and confirms with the user that this occurred. See the above section for how to use.
 - `list_odk_projects()`: Simply produces all country projects that exist in ODK for the RBLFSCHMAL team. No additional parameters are needed to use this function.
@@ -51,4 +58,4 @@ An actor name is necessary to create a new user, while an actor ID is needed to 
     - Example 1: `update_odk_app_user_role(action = "create", project_id = 2, actor_name = "amehtaTEST")` will create a new user called "amehtaTEST" in the Nigeria project.
     - Example 2: `update_odk_app_user_role(action = "delete", project_id = 2, actor_id = 960)` will delete the user "amehtaTEST" in the Nigeria project.
 
-
+# Coding Example with Data
