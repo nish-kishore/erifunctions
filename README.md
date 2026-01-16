@@ -1,6 +1,5 @@
 ---
 title: "Guide to the `erifunctions` Repository"
-date: "`r Sys.Date()`"
 output: 
   rmdformats::readthedown
 ---
