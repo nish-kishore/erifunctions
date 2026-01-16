@@ -1,12 +1,10 @@
 ---
 title: "Guide to the `erifunctions` Repository"
-output: distill::distill.article
-  html_document: 
-    toc: true
-    toc_float: true
+date: "`r Sys.Date()`"
+output: 
+  rmdformats::readthedown
 ---
 
---------------------------------------------------
 # Background
 The "erifunctions" repository is intended for use by the Epidemiology, Research, and Innovation unit of the River Blindness, Lymphatic Filariasis, Schistosomiasis, and Malaria team at The Carter Center.
 The purpose of its suite of helper functions is to create a standardized code base and assist anyone in the group with streamlining certain tasks related to data analysis.
@@ -26,7 +24,8 @@ Additional functions used by the ERI unit will be added continuously to this rep
 9) Within the Console (bottom panel) in RStudio, type `install.packages("devtools")`. This installs the "devtools" package, which will be necessary to run certain features of the code found in the repository. 
 If you are asked within the Console if you want to proceed, type "Y".
 10) Next, type `devtools::load_all()` into the Console. If you are asked to install required packages (e.g., "dplyr", "here", "httr", etc.), select "Yes".
-    a) This will load the "erifunctions" repository as if it were a package.
+      
+      + This will load the "erifunctions" repository as if it were a package.
 
 # How to Set Up the Initial Interaction
 
@@ -35,6 +34,7 @@ If you are asked within the Console if you want to proceed, type "Y".
 init_odk_connection(url = "https://rblf.tccodk.org/", user = "[FIRST NAME].[LAST NAME]@cartercenter.org", pass = "[PASS]")
 ``` 
 Replace the items in brackets with your first name, last name, and ODK password. This will create an active ODK token. After your token expires in 24 hours, you can just type this code again to create a new token.
+
 2) You should now be able to use other functions in the repository! Try typing `list_odk_projects()` in the Console and see if all existing ODK projects for the RBLFSCHMAL team appear.
 
 *Note:* The parameters of the `init_odk_connection()` function are the ODK URL, username (TCC email), and password, along with items that indicate if testing is needed (`testing`, automatically set as "FALSE") and if
